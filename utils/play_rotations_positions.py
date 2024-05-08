@@ -15,13 +15,13 @@ import time
 import tensorflow as tf
 import numpy as np
 
-from motion_imitation.utilities import pose3d
+from utils.utilities import pose3d
 from pybullet_utils import transformations
 import pybullet
 import pybullet_data as pd
-from motion_imitation.utilities import motion_util
+from utils.utilities import motion_util
 
-import retarget_config_a1 as config
+import retarget_motion.retarget_config_a1 as config
 import math
 import glob
 import os
