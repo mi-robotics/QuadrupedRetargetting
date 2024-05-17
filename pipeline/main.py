@@ -1,14 +1,24 @@
 import os
+import sys
 import numpy as np
 import torch 
+
+# Get the directory of the script or environment you are currently in
+current_directory = os.getcwd()
+
+# Get the parent directory
+parent_directory = os.path.dirname(current_directory)
+
+sys.path.append(parent_directory)
+
 
 from poselib.poselib.skeleton.skeleton3d import SkeletonTree, SkeletonState, SkeletonMotion
 from augment_motion.motion_augmentation import resize_motion_clip, reflect_xy_plane
 
 
-RAW_DIR = '/home/milo/Documents/cdt-1/examples/motion_imitation/data/raw'
-AUGMENTED_DIR = '/home/milo/Documents/cdt-1/examples/motion_imitation/data/augmented'
-PROCESSED_DIR = '/home/milo/Documents/cdt-1/examples/motion_imitation/data/processed'
+RAW_DIR = '/home/mcarroll/Documents/cdt-1/QuadrupedRetargetting/data/raw'
+AUGMENTED_DIR = '/home/mcarroll/Documents/cdt-1/QuadrupedRetargetting/data/augmented'
+PROCESSED_DIR = '/home/mcarroll/Documents/cdt-1/QuadrupedRetargetting/data/processed'
 
 def check_dir(dir_path):
 
@@ -56,8 +66,9 @@ def resize_files(data_dir):
             resize_motion_clip(pos, rot, 200, save_name, f'{AUGMENTED_DIR}/{data_dir}/short/' )
 
     for f_name in inv_data_files:
+       
         save_name = f_name.split('.npz')[0]
-        f_path = AUGMENTED_DIR + '/' + data_dir + '/' +f_name
+        f_path = AUGMENTED_DIR + '/' + data_dir + '/inv/' +f_name
         if os.path.isfile(f_path):
             data = np.load(f_path)
             pos = data['pos']
@@ -86,7 +97,7 @@ def format_files(data_dir, fps=60):
                 
                 if len(pos) > 50:
 
-                    a1_skeleton = SkeletonState.from_file('/home/milo/Documents/cdt-1/examples/motion_imitation/poselib/data/a1_tpose_v2.npy').skeleton_tree
+                    a1_skeleton = SkeletonState.from_file('/home/mcarroll/Documents/cdt-1/QuadrupedRetargetting/poselib/data/a1_tpose_v2.npy').skeleton_tree
 
                     a1_state = SkeletonState.from_rotation_and_root_translation(
                                 a1_skeleton, r=rot, t=pos, is_local=True
@@ -112,7 +123,7 @@ def format_files(data_dir, fps=60):
                 
                 if len(pos) > 50:
 
-                    a1_skeleton = SkeletonState.from_file('/home/milo/Documents/cdt-1/examples/motion_imitation/poselib/data/a1_tpose_v2.npy').skeleton_tree
+                    a1_skeleton = SkeletonState.from_file('/home/mcarroll/Documents/cdt-1/QuadrupedRetargetting/poselib/data/a1_tpose_v2.npy').skeleton_tree
 
                     a1_state = SkeletonState.from_rotation_and_root_translation(
                                 a1_skeleton, r=rot, t=pos, is_local=True
@@ -131,4 +142,17 @@ def format_files(data_dir, fps=60):
 
 def main():
 
+    target_dirs = ['stand']
+
+    for target_dir in target_dirs:
+        invert_files(target_dir)
+        print('INVERTED')
+        resize_files(target_dir)
+        print('RESIZED')
+        format_files(target_dir)
+        print('FORMATED')
+
     return 
+
+if __name__ == '__main__':
+    main()
